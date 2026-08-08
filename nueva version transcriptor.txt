@@ -1,0 +1,5 @@
+Ana-Trans
+
+pasos a seguir para empezar el desarrollo
+1. escojer la tecnologia para la GUI: GTK
+2. Leer documentacion para informarse de la instalacion, compilacion y uso general
