@@ -1,0 +1,12 @@
+{
+  "dependencies": [
+    "llama-cpp",
+    "whisper-cpp",
+    "gtk",
+    "libzip",
+    {
+      "name": "ffmpeg",
+      "features": ["ffmpeg", "ffprobe"]
+    }
+  ]
+}

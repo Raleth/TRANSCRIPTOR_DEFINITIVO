@@ -1,0 +1,13 @@
+# Directorios de build (CMake)
+build/
+
+# compile_commands.json es generado por CMake; en la raíz hay un enlace
+# simbólico hacia build/<preset>/compile_commands.json
+compile_commands.json
+
+# Caché de clangd
+.cache/
+
+
+# Paquetes instalados por vcpkg (se regeneran al configurar)
+vcpkg_installed/

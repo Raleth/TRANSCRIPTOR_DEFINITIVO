@@ -1,0 +1,8 @@
+# Configuración de clangd para este proyecto.
+#
+# La fuente de verdad de la compilación es CMake: compile_commands.json se
+# genera en build/<preset>/ y se expone en la raíz mediante un enlace
+# simbólico. Aquí SOLO se le indica a clangd dónde está esa base de datos;
+# no se duplica ningún flag, include ni estándar (todo llega de CMake).
+CompileFlags:
+  CompilationDatabase: .
