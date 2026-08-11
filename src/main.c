@@ -1,5 +1,6 @@
 #include "batch.h"
 #include "config.h"
+#include "controller.h"
 #include "gui.h"
 #include "process.h"
 #include "formats.h"
@@ -132,11 +133,13 @@ main (int argc, char **argv)
         return cli_process ((const char *const *) (argv + 1), argc - 1);
 
     /* Sin argumentos: GUI GTK. */
+    controller_init ();
     GtkApplication *app =
         gtk_application_new ("org.anatrans.transcriptor", G_APPLICATION_DEFAULT_FLAGS);
     g_signal_connect (app, "activate", G_CALLBACK (gui_activate), NULL);
 
     int status = g_application_run (G_APPLICATION (app), argc, argv);
+    controller_shutdown ();
     g_object_unref (app);
     return status;
 }

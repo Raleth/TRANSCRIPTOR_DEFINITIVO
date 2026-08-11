@@ -2,8 +2,9 @@
 
 #include "batch.h"
 #include "config.h"
-#include "process.h"
+#include "controller.h"
 #include "formats.h"
+#include "models.h"
 #include "transcribe.h"
 
 #include <stdarg.h>
@@ -21,11 +22,23 @@ typedef struct {
     GtkWidget      *combo_lang;
     GtkWidget      *combo_format;
 
+    /* Sección "modelo" de la pestaña Transcripción (según el modo). */
+    GtkWidget      *box_model;         /* contenedor visible */
+    GtkWidget      *row_model_custom;  /* vista modo personalizado */
+    GtkWidget      *box_model_easy;    /* vista modo sencillo (3 radios) */
+    GtkWidget      *radio_easy[3];     /* Preciso / Equilibrado / Rápido */
+    GtkWidget      *label_easy_status[3]; /* subtexto + estado por modelo */
+
     /* Preferencias (pestaña con guardado automático). */
     GtkWidget      *entry_pref_model;
     GtkWidget      *entry_pref_output;
     GtkWidget      *combo_pref_lang;
     GtkWidget      *combo_pref_format;
+    GtkWidget      *row_pref_custom;      /* fila del modelo personalizado */
+    GtkWidget      *combo_pref_model_mode; /* personalizado / sencillo */
+    GtkWidget      *row_pref_easy;         /* panel del modo sencillo */
+    GtkWidget      *btn_pref_download;
+    GtkWidget      *label_pref_easy_status[3]; /* estado por modelo */
     guint           save_timeout_id;
 
     GtkWidget      *list_box;         /* GtkBox vertical con las filas        */
@@ -38,14 +51,6 @@ typedef struct {
     GtkTextBuffer  *log_buffer;
     GtkWidget      *btn_process;
 
-    /* Estado del procesamiento en segundo plano. */
-    gboolean        processing;
-    gchar         **files_snapshot;
-    int             n_files_snapshot;
-    gchar          *output_dir_snapshot;
-    gchar          *model_snapshot;
-    gchar          *language_snapshot;
-    gchar          *format_id_snapshot;
 } AppState;
 
 /* ---------------------------------------------------------------------------
@@ -59,6 +64,9 @@ static void     add_row_for_path  (AppState *st, const char *path);
 static void     clear_rows        (AppState *st);
 static void     set_files         (AppState *st, GPtrArray *files);
 static GtkWidget *make_file_row   (AppState *st, const char *path);
+static void     update_easy_model_status (AppState *st);
+static void     start_missing_download   (AppState *st);
+static void     on_easy_radio_toggled    (GtkCheckButton *button, gpointer user_data);
 
 /* ---------------------------------------------------------------------------
  * Utilidades de UI
@@ -372,183 +380,134 @@ on_pick_model_file (GtkButton *button, gpointer user_data)
 }
 
 /* ---------------------------------------------------------------------------
- * Procesamiento en segundo plano (hilo de trabajo)
+ * Eventos del motor (controller.h): la GUI solo pinta lo que recibe.
  * ------------------------------------------------------------------------- */
 
-typedef struct {
-    AppState *st;
-    gboolean  final;
-    int       done;
-    int       total;
-    int       ok_count;
-    char     *file;
-    gboolean  success;
-    char     *message;
-} UiUpdate;
-
-/* Actualización de la barra de progreso (se crea en el hilo de trabajo). */
-typedef struct {
-    AppState *st;
-    int       files_done;    /* archivos ya completados */
-    int       total_files;   /* total del lote */
-    int       file_percent;  /* 0-100 dentro del archivo actual */
-    char     *file;          /* archivo actual (puede ser NULL) */
-    char     *phase;         /* "modelo", "convirtiendo", "transcribiendo", "listo" */
-} ProgressUpdate;
-
-static gboolean
-on_progress_idle (gpointer user_data)
+static void
+on_controller_event (const ControllerEvent *ev, gpointer user_data)
 {
-    ProgressUpdate *p = user_data;
-    AppState *st = p->st;
+    AppState *st = user_data;
 
-    /* whisper puede reportar valores fuera de [0,100] en los bordes. */
-    int file_pct = CLAMP (p->file_percent, 0, 100);
-    double fraction = (p->total_files > 0)
-                          ? ((double) p->files_done + (double) file_pct / 100.0)
-                                / (double) p->total_files
-                          : 0.0;
+    switch (ev->type) {
+        case CONTROLLER_EVENT_PROGRESS: {
+            if (g_strcmp0 (ev->phase, "descargando") == 0) {
+                gchar *txt = g_strdup_printf ("Descargando modelo %s (%d/%d)…",
+                                              (ev->file != NULL) ? ev->file : "?",
+                                              ev->done + 1, ev->total);
+                update_status (st, txt);
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), txt);
+                gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress),
+                                               (ev->total > 0)
+                                                   ? (double) ev->done / ev->total
+                                                   : 0.0);
+                g_free (txt);
+                break;
+            }
+            if (g_strcmp0 (ev->phase, "descargado") == 0) {
+                gchar *txt = g_strdup_printf ("Modelo %s listo (%d/%d).",
+                                              (ev->file != NULL) ? ev->file : "?",
+                                              ev->done, ev->total);
+                update_status (st, txt);
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), txt);
+                gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress),
+                                               (ev->total > 0)
+                                                   ? (double) ev->done / ev->total
+                                                   : 1.0);
+                g_free (txt);
+                break;
+            }
+            int file_pct = CLAMP (ev->file_percent, 0, 100);
+            double fraction = (ev->total > 0)
+                                  ? ((double) ev->done + (double) file_pct / 100.0)
+                                        / (double) ev->total
+                                  : 0.0;
 
-    gchar *text;
-    if (g_strcmp0 (p->phase, "modelo") == 0) {
-        text = g_strdup ("Cargando modelo…");
-    } else {
-        int pct = (int) (fraction * 100.0 + 0.5);
-        gchar *fname = (p->file != NULL) ? g_path_get_basename (p->file) : NULL;
-        text = g_strdup_printf ("%d/%d · %d%% — %s (%s)",
-                                p->files_done + 1, p->total_files, pct,
-                                (fname != NULL) ? fname : "?",
-                                (p->phase != NULL) ? p->phase : "");
-        g_free (fname);
+            gchar *text;
+            if (g_strcmp0 (ev->phase, "modelo") == 0) {
+                text = g_strdup ("Cargando modelo…");
+            } else {
+                int pct = (int) (fraction * 100.0 + 0.5);
+                gchar *fname = (ev->file != NULL) ? g_path_get_basename (ev->file) : NULL;
+                text = g_strdup_printf ("%d/%d · %d%% — %s (%s)",
+                                        ev->done + 1, ev->total, pct,
+                                        (fname != NULL) ? fname : "?",
+                                        (ev->phase != NULL) ? ev->phase : "");
+                g_free (fname);
+            }
+
+            gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), fraction);
+            gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), text);
+            update_status (st, text);
+            g_free (text);
+            break;
+        }
+
+        case CONTROLLER_EVENT_REPORT: {
+            gchar *msg = g_strdup_printf ("[%d/%d] %s", ev->done, ev->total, ev->file);
+            log_line (st, "%s -> %s", msg, ev->success ? "OK" : "ERROR");
+            if (!ev->success && ev->message != NULL && ev->message[0] != 0)
+                log_line (st, "    %s", ev->message);
+            g_free (msg);
+            break;
+        }
+
+        case CONTROLLER_EVENT_FINISHED: {
+            gchar *msg = g_strdup_printf ("Proceso terminado: %d de %d archivo(s) convertidos.",
+                                          ev->ok_count, ev->total);
+            log_line (st, "%s", msg);
+            update_status (st, msg);
+            g_free (msg);
+            gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), 1.0);
+            gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Completado");
+            gtk_widget_set_sensitive (st->btn_process, TRUE);
+            break;
+        }
+
+        case CONTROLLER_EVENT_DOWNLOAD_FINISHED: {
+            if (ev->ok_count > 0) {
+                if (ev->file != NULL) {
+                    log_line (st, "Modelo %s descargado correctamente.", ev->file);
+                    update_status (st, "Modelo descargado.");
+                } else {
+                    gchar *msg = g_strdup_printf ("Descarga de modelos terminada: %d de %d correctos.",
+                                                  ev->ok_count, ev->total);
+                    log_line (st, "%s", msg);
+                    update_status (st, msg);
+                    g_free (msg);
+                }
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Modelo descargado");
+            } else {
+                if (ev->file != NULL)
+                    log_line (st, "Error al descargar el modelo %s: %s",
+                              ev->file, (ev->message != NULL) ? ev->message : "?");
+                else
+                    log_line (st, "Error al descargar los modelos: %s",
+                              (ev->message != NULL) ? ev->message : "?");
+                update_status (st, "Error al descargar el modelo.");
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Descarga fallida");
+            }
+            gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), 1.0);
+            update_easy_model_status (st);
+            break;
+        }
+
+        case CONTROLLER_EVENT_MODELS_SYNCED: {
+            update_easy_model_status (st);
+            if (ev->ok_count == ev->total) {
+                log_line (st, "Modelos del modo sencillo listos.");
+                update_status (st, "Modelos del modo sencillo listos.");
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Modelos listos");
+            } else {
+                gchar *msg = g_strdup_printf ("La descarga terminó con errores (%d de %d modelos).",
+                                              ev->ok_count, ev->total);
+                log_line (st, "%s", msg);
+                update_status (st, msg);
+                gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Descarga con errores");
+                g_free (msg);
+            }
+            break;
+        }
     }
-
-    gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), fraction);
-    gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), text);
-    update_status (st, text);
-    g_free (text);
-    return G_SOURCE_REMOVE;
-}
-
-static void
-on_progress_idle_destroy (gpointer user_data)
-{
-    ProgressUpdate *p = user_data;
-    g_free (p->file);
-    g_free (p->phase);
-    g_free (p);
-}
-
-static void
-on_process_progress (int files_done, int total_files, int file_percent,
-                     const char *current_file, const char *phase, gpointer user_data)
-{
-    AppState *st = user_data;
-
-    ProgressUpdate *p = g_new0 (ProgressUpdate, 1);
-    p->st           = st;
-    p->files_done   = files_done;
-    p->total_files  = total_files;
-    p->file_percent = file_percent;
-    p->file         = g_strdup (current_file);
-    p->phase        = g_strdup (phase);
-
-    g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, on_progress_idle, p, on_progress_idle_destroy);
-}
-
-static gboolean
-on_process_idle (gpointer user_data)
-{
-    UiUpdate *u = user_data;
-    AppState *st = u->st;
-
-    if (u->final) {
-        gchar *msg = g_strdup_printf ("Proceso terminado: %d de %d archivo(s) convertidos.",
-                                      u->ok_count, u->total);
-        log_line (st, "%s", msg);
-        update_status (st, msg);
-        g_free (msg);
-
-        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), 1.0);
-        gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "Completado");
-        gtk_widget_set_sensitive (st->btn_process, TRUE);
-        st->processing = FALSE;
-
-        for (int i = 0; i < st->n_files_snapshot; i++)
-            g_free (st->files_snapshot[i]);
-        g_free (st->files_snapshot);
-        st->files_snapshot = NULL;
-        st->n_files_snapshot = 0;
-        g_free (st->output_dir_snapshot);
-        st->output_dir_snapshot = NULL;
-        g_free (st->model_snapshot);
-        st->model_snapshot = NULL;
-        g_free (st->language_snapshot);
-        st->language_snapshot = NULL;
-        g_free (st->format_id_snapshot);
-        st->format_id_snapshot = NULL;
-
-        return G_SOURCE_REMOVE;
-    }
-
-    gchar *msg = g_strdup_printf ("[%d/%d] %s", u->done, u->total, u->file);
-    log_line (st, "%s -> %s", msg, u->success ? "OK (WAV)" : "ERROR");
-    if (!u->success && u->message != NULL && *u->message != '\0')
-        log_line (st, "    %s", u->message);
-    update_status (st, msg);
-    gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress),
-                                   (double) u->done / (double) u->total);
-    g_free (msg);
-    return G_SOURCE_REMOVE;
-}
-
-static void
-on_process_idle_destroy (gpointer user_data)
-{
-    UiUpdate *u = user_data;
-    g_free (u->file);
-    g_free (u->message);
-    g_free (u);
-}
-
-static void
-on_process_report (const ProcessReport *r, gpointer user_data)
-{
-    AppState *st = user_data;
-
-    UiUpdate *u = g_new0 (UiUpdate, 1);
-    u->st      = st;
-    u->done    = r->done;
-    u->total   = r->total;
-    u->success = r->success;
-    u->file    = g_strdup (r->file);
-    u->message = g_strdup (r->message);
-
-    g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, on_process_idle, u, on_process_idle_destroy);
-}
-
-static gpointer
-process_worker (gpointer user_data)
-{
-    AppState *st = user_data;
-
-    const FormatWriter *writer = formats_from_string (st->format_id_snapshot);
-    int ok = process_run_batch ((const char *const *) st->files_snapshot,
-                                st->n_files_snapshot,
-                                st->output_dir_snapshot,
-                                st->model_snapshot,
-                                st->language_snapshot,
-                                writer,
-                                on_process_progress,
-                                on_process_report, st);
-
-    UiUpdate *u = g_new0 (UiUpdate, 1);
-    u->st       = st;
-    u->final    = TRUE;
-    u->ok_count = ok;
-    u->total    = st->n_files_snapshot;
-    g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, on_process_idle, u, on_process_idle_destroy);
-
-    return NULL;
 }
 
 static gboolean
@@ -556,9 +515,9 @@ on_close_request (GtkWidget *widget, gpointer user_data)
 {
     AppState *st = user_data;
 
-    if (st->processing) {
+    if (controller_is_running ()) {
         update_status (st, "Procesamiento en curso; espera a que termine.");
-        return TRUE; /* veta el cierre mientras se procesa */
+        return TRUE; /* veta el cierre mientras el motor trabaja */
     }
     return FALSE;
 }
@@ -572,7 +531,7 @@ on_process (GtkButton *button, gpointer user_data)
 {
     AppState *st = user_data;
 
-    if (st->processing) {
+    if (controller_is_running ()) {
         update_status (st, "Ya hay un procesamiento en curso.");
         return;
     }
@@ -583,24 +542,34 @@ on_process (GtkButton *button, gpointer user_data)
     }
 
     const char *out_dir = gtk_editable_get_text (GTK_EDITABLE (st->entry_output));
-    if (out_dir == NULL || *out_dir == '\0') {
+    if (out_dir == NULL || out_dir[0] == 0) {
         update_status (st, "Indica una carpeta de salida primero.");
         return;
     }
 
-    const char *model = gtk_editable_get_text (GTK_EDITABLE (st->entry_model));
-    if (model == NULL || *model == '\0') {
-        update_status (st, "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL.");
-        return;
-    }
+    /* Modelo según el modo activo. */
+    gchar *model = NULL;
+    gboolean easy_mode = g_ascii_strcasecmp (config_get_model_mode (), "easy") == 0;
 
-    /* Snapshot para el hilo de trabajo (el hilo no toca widgets). */
-    st->n_files_snapshot = (int) st->files->len;
-    st->files_snapshot = g_new0 (gchar *, (guint) st->n_files_snapshot);
-    for (int i = 0; i < st->n_files_snapshot; i++)
-        st->files_snapshot[i] = g_strdup (g_ptr_array_index (st->files, (guint) i));
-    st->output_dir_snapshot = g_strdup (out_dir);
-    st->model_snapshot = g_strdup (model);
+    if (easy_mode) {
+        const char *id = config_get_easy_model ();
+        const KnownModel *m = models_find (id);
+        if (m == NULL || !models_is_downloaded (id)) {
+            gchar *txt = g_strdup_printf ("El modelo '%s' aún no está descargado (modo sencillo).",
+                                          (m != NULL) ? m->label : id);
+            update_status (st, txt);
+            g_free (txt);
+            return;
+        }
+        model = models_path (id);
+    } else {
+        const char *text = gtk_editable_get_text (GTK_EDITABLE (st->entry_model));
+        if (text == NULL || text[0] == 0) {
+            update_status (st, "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL.");
+            return;
+        }
+        model = g_strdup (text);
+    }
 
     const char *lang = gtk_string_list_get_string (
         GTK_STRING_LIST (gtk_drop_down_get_model (GTK_DROP_DOWN (st->combo_lang))),
@@ -609,22 +578,35 @@ on_process (GtkButton *button, gpointer user_data)
         GTK_STRING_LIST (gtk_drop_down_get_model (GTK_DROP_DOWN (st->combo_format))),
         gtk_drop_down_get_selected (GTK_DROP_DOWN (st->combo_format)));
 
-    st->language_snapshot = g_strdup (lang);
-    st->format_id_snapshot = g_strdup (fmt);
+    /* Entregar el trabajo al motor: la GUI solo inicia y espera eventos. */
+    ControllerJob job = {
+        .files      = (char **) st->files->pdata,
+        .n_files    = (int) st->files->len,
+        .output_dir = (char *) out_dir,
+        .model_path = (char *) model,
+        .language   = (char *) lang,
+        .format_id  = (char *) fmt,
+    };
 
-    st->processing = TRUE;
     gtk_widget_set_sensitive (st->btn_process, FALSE);
     gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (st->progress), 0.0);
+    gtk_progress_bar_set_text (GTK_PROGRESS_BAR (st->progress), "");
 
     log_line (st, "--- Procesamiento (ffmpeg -> whisper) ---");
     log_line (st, "Carpeta de salida: %s", out_dir);
     log_line (st, "Modelo whisper    : %s", model);
     log_line (st, "Idioma / Formato  : %s / %s", lang, fmt);
-    log_line (st, "Archivos en cola  : %d", st->n_files_snapshot);
+    log_line (st, "Archivos en cola  : %d", job.n_files);
 
     update_status (st, "Procesando…");
-    g_thread_new ("process", process_worker, st);
+
+    if (!controller_start (&job, on_controller_event, st)) {
+        update_status (st, "No se pudo iniciar el procesamiento.");
+        gtk_widget_set_sensitive (st->btn_process, TRUE);
+    }
+    g_free (model);
 }
+
 
 
 
@@ -779,6 +761,133 @@ on_pick_pref_output (GtkButton *button, gpointer user_data)
 }
 
 static void
+refresh_model_entry (AppState *st)
+{
+    gtk_editable_set_text (GTK_EDITABLE (st->entry_model),
+                           config_get_whisper_model ());
+}
+
+static void
+update_easy_model_status (AppState *st)
+{
+    const KnownModel *km = models_known ();
+
+    for (int i = 0; i < 3 && km[i].id != NULL; i++) {
+        gboolean ok = models_is_downloaded (km[i].id);
+
+        /* Subtexto de la pestaña Transcripción: descripción + estado. */
+        if (st->label_easy_status[i] != NULL) {
+            gchar *txt = g_strdup_printf ("%s — %s",
+                                          (km[i].desc != NULL) ? km[i].desc : "",
+                                          ok ? "Descargado" : "Pendiente de descarga");
+            gtk_label_set_text (GTK_LABEL (st->label_easy_status[i]), txt);
+            g_free (txt);
+        }
+
+        /* Estado en Preferencias. */
+        if (st->label_pref_easy_status[i] != NULL)
+            gtk_label_set_text (GTK_LABEL (st->label_pref_easy_status[i]),
+                                ok ? "Descargado ✓" : "Pendiente de descarga");
+    }
+
+    gtk_widget_set_sensitive (st->btn_pref_download,
+                              models_first_missing () != NULL
+                                  && !controller_is_running ());
+}
+
+/* Modo de modelo: ids internos "custom"/"easy" con etiquetas en español. */
+static const char *k_mode_ids[]    = { "custom", "easy" };
+static const char *k_mode_labels[] = { "Modelo personalizado", "Modo sencillo" };
+
+static int
+mode_index (const char *mode)
+{
+    if (mode != NULL && g_ascii_strcasecmp (mode, "custom") == 0)
+        return 0;
+    return 1; /* modo sencillo (por defecto) */
+}
+
+static const char *
+mode_from_index (int idx)
+{
+    return (idx <= 0) ? k_mode_ids[0] : k_mode_ids[1];
+}
+
+static void
+apply_model_mode_visibility (AppState *st)
+{
+    gboolean easy = g_ascii_strcasecmp (config_get_model_mode (), "easy") == 0;
+    gtk_widget_set_visible (st->row_pref_custom, !easy);
+    gtk_widget_set_visible (st->row_pref_easy, easy);
+
+    /* Pestaña Transcripción: una vista u otra según el modo. */
+    gtk_widget_set_visible (st->row_model_custom, !easy);
+    gtk_widget_set_visible (st->box_model_easy, easy);
+}
+
+static void
+on_pref_mode_changed (GObject *gobject, GParamSpec *pspec, gpointer user_data)
+{
+    AppState *st = user_data;
+    int idx = gtk_drop_down_get_selected (GTK_DROP_DOWN (st->combo_pref_model_mode));
+    const char *v = mode_from_index (idx);
+
+    config_set_model_mode (v);
+    apply_model_mode_visibility (st);
+    refresh_model_entry (st);
+    if (g_ascii_strcasecmp (v, "easy") == 0) {
+        update_easy_model_status (st);
+        start_missing_download (st); /* auto-descarga de los que falten */
+    }
+    schedule_config_save (st);
+}
+
+static void
+on_easy_radio_toggled (GtkCheckButton *button, gpointer user_data)
+{
+    AppState *st = user_data;
+    if (!gtk_check_button_get_active (button))
+        return;
+
+    const KnownModel *km = models_known ();
+    for (int i = 0; i < 3 && km[i].id != NULL; i++) {
+        if (st->radio_easy[i] == (GtkWidget *) button) {
+            config_set_easy_model (km[i].id);
+            schedule_config_save (st);
+            return;
+        }
+    }
+}
+
+static void
+start_missing_download (AppState *st)
+{
+    if (controller_is_running ()) {
+        update_status (st, "Ya hay una tarea en curso; espera a que termine.");
+        return;
+    }
+    if (models_first_missing () == NULL) {
+        update_easy_model_status (st);
+        return; /* no hay nada que descargar */
+    }
+
+    gtk_widget_set_sensitive (st->btn_pref_download, FALSE);
+    update_status (st, "Descargando modelos del modo sencillo…");
+
+    if (!controller_download_missing_models (on_controller_event, st)) {
+        update_status (st, "No se pudo iniciar la descarga.");
+        update_easy_model_status (st);
+    }
+}
+
+static void
+on_pref_download_clicked (GtkButton *button, gpointer user_data)
+{
+    AppState *st = user_data;
+    start_missing_download (st);
+}
+
+static void
 build_preferences_tab (AppState *st, GtkNotebook *notebook)
 {
     GtkWidget *pref = gtk_box_new (GTK_ORIENTATION_VERTICAL, 8);
@@ -787,8 +896,22 @@ build_preferences_tab (AppState *st, GtkNotebook *notebook)
     gtk_widget_set_margin_start (pref, 12);
     gtk_widget_set_margin_end (pref, 12);
 
-    /* Modelo de whisper */
+    /* Modo de modelo */
+    GtkWidget *row_mode = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+    GtkStringList *modes =
+        gtk_string_list_new ((const char *[]) { k_mode_labels[0], k_mode_labels[1], NULL });
+    st->combo_pref_model_mode = gtk_drop_down_new (G_LIST_MODEL (modes), NULL);
+    gtk_drop_down_set_selected (GTK_DROP_DOWN (st->combo_pref_model_mode),
+                                mode_index (config_get_model_mode ()));
+    g_signal_connect (st->combo_pref_model_mode, "notify::selected",
+                      G_CALLBACK (on_pref_mode_changed), st);
+    gtk_box_append (GTK_BOX (row_mode), gtk_label_new ("Modo de modelo:"));
+    gtk_box_append (GTK_BOX (row_mode), st->combo_pref_model_mode);
+    gtk_box_append (GTK_BOX (pref), row_mode);
+
+    /* Modelo de whisper (personalizado) */
     GtkWidget *row_model = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+    st->row_pref_custom = row_model;
     st->entry_pref_model = gtk_entry_new ();
     gtk_widget_set_hexpand (st->entry_pref_model, TRUE);
     gtk_entry_set_placeholder_text (GTK_ENTRY (st->entry_pref_model),
@@ -799,10 +922,36 @@ build_preferences_tab (AppState *st, GtkNotebook *notebook)
     g_signal_connect (btn_model, "clicked", G_CALLBACK (on_pick_pref_model), st);
     g_signal_connect (st->entry_pref_model, "changed",
                       G_CALLBACK (on_pref_model_changed), st);
-    gtk_box_append (GTK_BOX (row_model), gtk_label_new ("Modelo de whisper:"));
+    gtk_box_append (GTK_BOX (row_model), gtk_label_new ("Modelo personalizado:"));
     gtk_box_append (GTK_BOX (row_model), st->entry_pref_model);
     gtk_box_append (GTK_BOX (row_model), btn_model);
     gtk_box_append (GTK_BOX (pref), row_model);
+
+    /* Modo sencillo (modelos auto-descargables) */
+    GtkWidget *row_easy = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
+    st->row_pref_easy = row_easy;
+    GtkWidget *row_easy_inner = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+    gtk_box_append (GTK_BOX (row_easy_inner),
+                    gtk_label_new ("Modelos del modo sencillo:"));
+    st->btn_pref_download = gtk_button_new_with_label ("Descargar modelos");
+    g_signal_connect (st->btn_pref_download, "clicked",
+                      G_CALLBACK (on_pref_download_clicked), st);
+    gtk_box_append (GTK_BOX (row_easy_inner), st->btn_pref_download);
+    gtk_box_append (GTK_BOX (row_easy), row_easy_inner);
+
+    const KnownModel *km = models_known ();
+    for (int i = 0; i < 3 && km[i].id != NULL; i++) {
+        GtkWidget *r = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+        gtk_box_append (GTK_BOX (r), gtk_label_new (km[i].label));
+        st->label_pref_easy_status[i] = gtk_label_new ("");
+        gtk_widget_set_hexpand (st->label_pref_easy_status[i], TRUE);
+        gtk_label_set_xalign (GTK_LABEL (st->label_pref_easy_status[i]), 0.0f);
+        gtk_box_append (GTK_BOX (r), st->label_pref_easy_status[i]);
+        gtk_box_append (GTK_BOX (row_easy), r);
+    }
+    gtk_box_append (GTK_BOX (pref), row_easy);
+    update_easy_model_status (st);
+    apply_model_mode_visibility (st);
 
     /* Carpeta de salida */
     GtkWidget *row_out = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
@@ -942,7 +1091,12 @@ build_ui (AppState *st, GtkApplication *app)
     gtk_box_append (GTK_BOX (row_out), btn_out);
     gtk_box_append (GTK_BOX (root), row_out);
 
+    /* ---- Modelo (según el modo: sencillo o personalizado) ---------------- */
+    st->box_model = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
+
+    /* Vista modo personalizado: ruta + selector de archivo. */
     GtkWidget *row_model = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+    st->row_model_custom = row_model;
     st->entry_model = gtk_entry_new ();
     gtk_widget_set_hexpand (st->entry_model, TRUE);
     gtk_editable_set_text (GTK_EDITABLE (st->entry_model), config_get_whisper_model ());
@@ -955,7 +1109,41 @@ build_ui (AppState *st, GtkApplication *app)
     gtk_box_append (GTK_BOX (row_model), gtk_label_new ("Modelo whisper:"));
     gtk_box_append (GTK_BOX (row_model), st->entry_model);
     gtk_box_append (GTK_BOX (row_model), btn_model);
-    gtk_box_append (GTK_BOX (root), row_model);
+    gtk_box_append (GTK_BOX (st->box_model), row_model);
+
+    /* Vista modo sencillo: 3 radios (Preciso / Equilibrado / Rápido). */
+    st->box_model_easy = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
+    GtkWidget *easy_title = gtk_label_new ("Modelo (modo sencillo):");
+    gtk_label_set_xalign (GTK_LABEL (easy_title), 0.0f);
+    gtk_box_append (GTK_BOX (st->box_model_easy), easy_title);
+
+    const KnownModel *km = models_known ();
+    GtkWidget *group = NULL;
+    for (int i = 0; i < 3 && km[i].id != NULL; i++) {
+        GtkWidget *row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+
+        GtkWidget *radio = gtk_check_button_new_with_label (km[i].label);
+        if (i == 0)
+            group = radio;
+        else
+            gtk_check_button_set_group (GTK_CHECK_BUTTON (radio),
+                                        GTK_CHECK_BUTTON (group));
+        st->radio_easy[i] = radio;
+        if (g_ascii_strcasecmp (km[i].id, config_get_easy_model ()) == 0)
+            gtk_check_button_set_active (GTK_CHECK_BUTTON (radio), TRUE);
+        g_signal_connect (radio, "toggled", G_CALLBACK (on_easy_radio_toggled), st);
+
+        st->label_easy_status[i] = gtk_label_new ("");
+        gtk_widget_set_hexpand (st->label_easy_status[i], TRUE);
+        gtk_label_set_xalign (GTK_LABEL (st->label_easy_status[i]), 0.0f);
+        gtk_label_set_wrap (GTK_LABEL (st->label_easy_status[i]), TRUE);
+
+        gtk_box_append (GTK_BOX (row), radio);
+        gtk_box_append (GTK_BOX (row), st->label_easy_status[i]);
+        gtk_box_append (GTK_BOX (st->box_model_easy), row);
+    }
+    gtk_box_append (GTK_BOX (st->box_model), st->box_model_easy);
+    gtk_box_append (GTK_BOX (root), st->box_model);
 
     GtkWidget *row_lang = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
     GtkStringList *langs =
@@ -1048,15 +1236,6 @@ on_window_destroy (GtkWidget *widget, gpointer user_data)
         g_ptr_array_free (st->files, TRUE);
     if (st->rows != NULL)
         g_ptr_array_free (st->rows, TRUE);
-    if (st->files_snapshot != NULL) {
-        for (int i = 0; i < st->n_files_snapshot; i++)
-            g_free (st->files_snapshot[i]);
-        g_free (st->files_snapshot);
-    }
-    g_free (st->output_dir_snapshot);
-    g_free (st->model_snapshot);
-    g_free (st->language_snapshot);
-    g_free (st->format_id_snapshot);
     g_free (st);
 }
 
@@ -1071,6 +1250,17 @@ gui_activate (GtkApplication *app)
 
     g_signal_connect (st->window, "destroy", G_CALLBACK (on_window_destroy), st);
     g_signal_connect (st->window, "close-request", G_CALLBACK (on_close_request), st);
+
+    /* Arranque: en modo sencillo, descargar automáticamente los modelos que
+     * falten (solo la primera vez; después quedan cacheados). */
+    if (g_ascii_strcasecmp (config_get_model_mode (), "easy") == 0) {
+        if (models_first_missing () != NULL) {
+            log_line (st, "Faltan modelos del modo sencillo; iniciando descarga automática…");
+            start_missing_download (st);
+        } else {
+            update_easy_model_status (st);
+        }
+    }
 
     gtk_window_present (GTK_WINDOW (st->window));
 }

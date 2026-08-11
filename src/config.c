@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <glib/gstdio.h>
+#include "models.h"
 
 #define CONFIG_GROUP      "preferences"
 #define CONFIG_FILE_NAME  "config.ini"
@@ -10,6 +11,8 @@ static gchar *cfg_whisper_model  = NULL;
 static gchar *cfg_output_dir     = NULL;
 static gchar *cfg_transcript_lang = NULL;
 static gchar *cfg_transcript_format = NULL;
+static gchar *cfg_model_mode = NULL;
+static gchar *cfg_easy_model = NULL;
 
 static GKeyFile *keyfile = NULL;
 static gchar *config_file = NULL;
@@ -41,6 +44,8 @@ config_ensure (void)
     cfg_output_dir      = g_key_file_get_string (keyfile, CONFIG_GROUP, "output-dir", NULL);
     cfg_transcript_lang = g_key_file_get_string (keyfile, CONFIG_GROUP, "transcript-lang", NULL);
     cfg_transcript_format = g_key_file_get_string (keyfile, CONFIG_GROUP, "transcript-format", NULL);
+    cfg_model_mode  = g_key_file_get_string (keyfile, CONFIG_GROUP, "model-mode", NULL);
+    cfg_easy_model  = g_key_file_get_string (keyfile, CONFIG_GROUP, "easy-model", NULL);
 }
 
 void
@@ -80,6 +85,17 @@ config_get_whisper_model (void)
     if (env != NULL && *env != '\0')
         return env;
     config_ensure ();
+
+    /* modo sencillo: la ruta del modelo auto-descargado. Se usa
+     * config_get_model_mode() para respetar el valor por defecto (easy). */
+    if (g_ascii_strcasecmp (config_get_model_mode (), "easy") == 0) {
+        const char *easy = config_get_easy_model ();
+        static gchar *easy_path = NULL;
+        g_free (easy_path);
+        easy_path = models_path (easy);
+        return (easy_path != NULL) ? easy_path : "";
+    }
+
     return (cfg_whisper_model != NULL) ? cfg_whisper_model : "";
 }
 
@@ -168,6 +184,40 @@ config_set_transcript_format (const char *value)
     g_free (cfg_transcript_format);
     cfg_transcript_format = g_strdup (value != NULL ? value : "");
     g_key_file_set_string (keyfile, CONFIG_GROUP, "transcript-format", cfg_transcript_format);
+}
+
+const char *
+config_get_model_mode (void)
+{
+    config_ensure ();
+    return (cfg_model_mode != NULL && *cfg_model_mode != '\0') ? cfg_model_mode : "easy";
+}
+
+void
+config_set_model_mode (const char *value)
+{
+    config_ensure ();
+    g_free (cfg_model_mode);
+    cfg_model_mode = g_strdup ((value != NULL && *value != '\0') ? value : "easy");
+    g_key_file_set_string (keyfile, CONFIG_GROUP, "model-mode", cfg_model_mode);
+}
+
+const char *
+config_get_easy_model (void)
+{
+    config_ensure ();
+    return (cfg_easy_model != NULL && *cfg_easy_model != '\0')
+               ? cfg_easy_model : "large-v3-turbo";
+}
+
+void
+config_set_easy_model (const char *value)
+{
+    config_ensure ();
+    g_free (cfg_easy_model);
+    cfg_easy_model = g_strdup ((value != NULL && *value != '\0')
+                                   ? value : "large-v3-turbo");
+    g_key_file_set_string (keyfile, CONFIG_GROUP, "easy-model", cfg_easy_model);
 }
 
 /* --- guardado --- */

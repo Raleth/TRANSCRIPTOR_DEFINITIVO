@@ -1,6 +1,7 @@
 #include "process.h"
 
 #include "audio.h"
+#include "cleanup.h"
 #include "transcribe.h"
 
 #include <glib/gstdio.h>
@@ -56,6 +57,14 @@ process_run_batch (const char *const *files, int n_files,
     g_return_val_if_fail (output_dir != NULL && *output_dir != '\0', 0);
     g_return_val_if_fail (writer != NULL, 0);
 
+    /* Carpeta temporal para los WAV intermedios (se borra al terminar). */
+    gboolean have_temp = cleanup_begin ();
+    const char *wav_dir = have_temp ? cleanup_get_wav_dir () : output_dir;
+
+    /* Asegurar que la carpeta de salida existe (los WAV intermedios ya no
+     * la crean al ir a la carpeta temporal). */
+    g_mkdir_with_parents (output_dir, 0755);
+
     if (progress != NULL)
         progress (0, n_files, 0, (n_files > 0) ? files[0] : NULL, "modelo", user_data);
 
@@ -78,6 +87,7 @@ process_run_batch (const char *const *files, int n_files,
         }
         if (err != NULL)
             g_error_free (err);
+        cleanup_finish ();
         return 0;
     }
     if (err != NULL)
@@ -102,7 +112,8 @@ process_run_batch (const char *const *files, int n_files,
             progress (i, n_files, 0, input, "convirtiendo", user_data);
 
         /* 1) ffmpeg -> WAV PCM16 mono 16 kHz */
-        gchar *wav = audio_build_wav_path (output_dir, input);
+        gchar *wav = audio_build_wav_path (wav_dir, input);
+        cleanup_set_current_wav (wav);
         GError *cerr = NULL;
         if (!audio_convert_to_wav (input, wav, &cerr)) {
             rep.message = g_strdup ((cerr != NULL) ? cerr->message
@@ -113,6 +124,8 @@ process_run_batch (const char *const *files, int n_files,
                 report (&rep, user_data);
             if (progress != NULL)
                 progress (i + 1, n_files, 100, input, "listo", user_data);
+            g_remove (wav);
+            cleanup_clear_current_wav ();
             g_free (rep.message);
             g_free (wav);
             continue;
@@ -143,6 +156,9 @@ process_run_batch (const char *const *files, int n_files,
         if (progress != NULL)
             progress (i + 1, n_files, 100, input, "listo", user_data);
 
+        /* el WAV intermedio ya no hace falta: se borra */
+        g_remove (wav);
+        cleanup_clear_current_wav ();
         g_free (rep.message);
         g_free (out_path);
         g_free (source_name);
@@ -150,5 +166,6 @@ process_run_batch (const char *const *files, int n_files,
     }
 
     transcribe_session_close (session);
+    cleanup_finish ();
     return ok_count;
 }

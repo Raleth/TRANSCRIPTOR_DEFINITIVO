@@ -68,6 +68,9 @@ add_executable(transcriptor
     src/config.c
     src/audio.c
     src/process.c
+    src/cleanup.c
+    src/controller.c
+    src/models.c
     src/transcribe.c
     src/formats.c
     src/fmt_txt.c
@@ -85,6 +88,10 @@ if(DEFINED VCPKG_INSTALLED_DIR AND DEFINED VCPKG_TARGET_TRIPLET)
     target_compile_definitions(transcriptor PRIVATE
         VCPKG_FFMPEG_TOOLS_DIR="${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/ffmpeg")
 endif()
+
+# Ruta del script de descarga de modelos (scripts/download-ggml-model.sh).
+target_compile_definitions(transcriptor PRIVATE
+    MODELS_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/scripts")
 
 # El estándar queda asociado al target para que compile_commands.json
 # refleje exactamente lo que se compila.

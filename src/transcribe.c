@@ -205,6 +205,7 @@ transcribe_session_run (WhisperSession *session,
                        g_ascii_strcasecmp (language, "auto") != 0) ? language : "auto";  /* "auto" -> detecta Y transcribe */
     params.detect_language = FALSE;  /* no fijar a TRUE: whisper_full solo detectaría el idioma y devolvería sin transcribir */
     params.no_context    = TRUE;  /* cada archivo del lote es independiente */
+    params.n_max_text_ctx = 0;    /* -mc 0: sin contexto del texto previo (evita bucles de repetición en audios largos) */
     params.no_timestamps = TRUE;  /* los tiempos se toman de los segmentos */
     params.print_progress   = FALSE;
     params.print_realtime   = FALSE;

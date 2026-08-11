@@ -19,7 +19,11 @@ G_BEGIN_DECLS
  *   OUTPUT_DIR         -> carpeta de salida
  *   FFMPEG_BIN         -> ejecutable de ffmpeg
  *   TRANSCRIPT_LANG    -> idioma ("auto", "es", "en", ...)
- *   TRANSCRIPT_FORMAT  -> id del formato ("docx", "pdf", "markdown", ...)
+ *   TRANSCRIPT_FORMAT  -> id del formato
+ *
+ * Modo de modelo (preferencia):
+ *   model-mode  = "custom" (el usuario elige su .bin) | "easy" (auto-descarga)
+ *   easy-model  = "large-v3-turbo" | "medium" | "small"
  */
 
 /* Carga la configuración guardada (idempotente; no falla si no existe). */
@@ -34,7 +38,10 @@ const char *config_default_output_dir (void);
 /* Carpeta de salida: env > config > "transcripciones". */
 const char *config_get_output_dir     (void);
 
-/* Modelo de whisper: env > config > "". */
+/*
+ * Modelo de whisper en uso: env > (según model-mode) ruta del modo sencillo
+ * o el modelo personalizado de config > "".
+ */
 const char *config_get_whisper_model  (void);
 
 /* Ejecutable de ffmpeg: $FFMPEG_BIN, o el de vcpkg, o "ffmpeg". */
@@ -46,8 +53,15 @@ const char *config_get_transcript_lang (void);
 /* Formato de transcripción: env > config > "docx". */
 const char *config_get_transcript_format (void);
 
-/* Setters: actualizan la preferencia en memoria (el guardado a disco lo
- * orquesta la GUI con config_save, normalmente con un pequeño debounce). */
+/* Modo de modelo: "custom" o "easy" (config > "custom"). */
+const char *config_get_model_mode (void);
+void config_set_model_mode (const char *value);
+
+/* Modelo del modo sencillo (config > "large-v3-turbo"). */
+const char *config_get_easy_model (void);
+void config_set_easy_model (const char *value);
+
+/* Setters de las preferencias existentes. */
 void config_set_whisper_model      (const char *value);
 void config_set_output_dir         (const char *value);
 void config_set_transcript_lang    (const char *value);
