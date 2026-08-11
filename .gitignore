@@ -11,3 +11,6 @@ compile_commands.json
 
 # Paquetes instalados por vcpkg (se regeneran al configurar)
 vcpkg_installed/
+
+# Clon de vcpkg (se clona aparte; ver README)
+vcpkg/
