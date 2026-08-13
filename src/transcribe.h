@@ -1,7 +1,10 @@
 #ifndef TRANSCRIBE_H
 #define TRANSCRIBE_H
 
+/* dependencias (GLib) */
 #include <glib.h>
+
+/* módulos del proyecto */
 #include "formats.h"
 
 G_BEGIN_DECLS

@@ -94,6 +94,12 @@ src/                   Fuentes: GUI, CLI, pipeline y formatos de salida
 
 Aún no definida.
 
+## Documentación
+
+- [Arquitectura](docs/ARQUITECTURA.md)
+- [Guía de desarrollo](docs/GUIA_DE_DESARROLLO.md)
+- [Dependencias: código propio vs terceros](docs/DEPENDENCIAS.md)
+
 ---
 
 [English](README.md) · **Español**

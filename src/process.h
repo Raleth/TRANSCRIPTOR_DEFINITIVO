@@ -1,7 +1,10 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+/* dependencias (GLib) */
 #include <glib.h>
+
+/* módulos del proyecto */
 #include "formats.h"
 
 G_BEGIN_DECLS

@@ -1,6 +1,7 @@
 #ifndef BATCH_H
 #define BATCH_H
 
+/* dependencias (GLib) */
 #include <glib.h>
 
 G_BEGIN_DECLS

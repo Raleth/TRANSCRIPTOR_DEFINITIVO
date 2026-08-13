@@ -1,5 +1,14 @@
+/* ============================================================================
+ * models.c — catálogo y descarga de los modelos del modo sencillo.
+ *
+ * [PROYECTO]    Ana-Trans: definición de los 3 modelos, rutas de datos y
+ *               ejecución del script de descarga.
+ * [DEPENDENCIA] GLib (rutas, g_spawn); script download-ggml-model.sh.
+ * ========================================================================== */
+
 #include "models.h"
 
+/* dependencias (GLib) */
 #include <glib/gstdio.h>
 #include <string.h>
 

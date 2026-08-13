@@ -1,7 +1,17 @@
+/* ============================================================================
+ * config.c — preferencias del usuario (env > config.ini > valor por defecto).
+ *
+ * [PROYECTO]    Ana-Trans: resolución de valores y guardado de config.ini.
+ * [DEPENDENCIA] GLib (GKeyFile, rutas, g_getenv).
+ * ========================================================================== */
+
 #include "config.h"
 
-#include <glib/gstdio.h>
+/* módulos del proyecto */
 #include "models.h"
+
+/* dependencias (GLib) */
+#include <glib/gstdio.h>
 
 #define CONFIG_GROUP      "preferences"
 #define CONFIG_FILE_NAME  "config.ini"

@@ -1,5 +1,13 @@
+/* ============================================================================
+ * formats.c — registro de formatos de salida y utilidades compartidas.
+ *
+ * [PROYECTO]    Ana-Trans: lista de escritores registrados (fmt_*.c).
+ * [DEPENDENCIA] GLib (GPtrArray, GError).
+ * ========================================================================== */
+
 #include "formats.h"
 
+/* dependencias (GLib y libc) */
 #include <glib/gstdio.h>
 #include <errno.h>
 #include <stdio.h>

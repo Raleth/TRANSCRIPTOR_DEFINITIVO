@@ -1,14 +1,19 @@
 #ifndef GUI_H
 #define GUI_H
 
+/* dependencias (GTK 4) */
 #include <gtk/gtk.h>
 
 /*
- * GUI: ventana GTK 4 para elegir carpeta/archivos de entrada, carpeta de
- * salida, modelo de whisper e idioma, con lista de archivos, progreso y log.
+ * GUI: interfaz GTK 4 de Ana-Trans.
  *
- * Esta fase es infraestructura: el botón "Procesar" todavía no transcribe,
- * solo muestra los archivos que procesaría.
+ * Construye la ventana (pestañas Transcripción y Preferencias), reúne la
+ * configuración del usuario y entrega el trabajo al motor asíncrono
+ * (controller.c) para procesarlo en segundo plano. Esta capa solo pinta
+ * widgets y muestra los eventos del motor: no ejecuta ffmpeg ni whisper.
+ *
+ * [PROYECTO]    lógica de la ventana y de las preferencias.
+ * [DEPENDENCIA] GTK 4 (widgets, diálogos), GLib.
  */
 
 void gui_activate (GtkApplication *app);

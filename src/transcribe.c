@@ -1,5 +1,14 @@
+/* ============================================================================
+ * transcribe.c — transcripción de un WAV con whisper.cpp.
+ *
+ * [PROYECTO]    Ana-Trans: lector de WAV, parámetros de whisper, ensamblado
+ *               del TranscriptDocument y entrega al escritor de formato.
+ * [DEPENDENCIA] whisper.cpp (whisper.h, port vcpkg "whisper-cpp"), GLib.
+ * ========================================================================== */
+
 #include "transcribe.h"
 
+/* dependencias (whisper.cpp vía vcpkg, GLib, libc) */
 #include <whisper.h>
 
 #include <glib/gstdio.h>

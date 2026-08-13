@@ -1,6 +1,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
+/* dependencias (GLib) */
 #include <glib.h>
 
 G_BEGIN_DECLS

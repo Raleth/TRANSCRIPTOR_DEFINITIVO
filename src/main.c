@@ -1,3 +1,4 @@
+/* módulos del proyecto */
 #include "batch.h"
 #include "config.h"
 #include "controller.h"
@@ -6,22 +7,27 @@
 #include "formats.h"
 #include "transcribe.h"
 
+/* dependencias (GLib / GTK) */
 #include <glib/gstdio.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
 
 /*
- * main: despacho del punto de entrada.
+ * main.c — punto de entrada de Ana-Trans.
  *
  *   ./transcriptor                      -> abre la GUI GTK
  *   ./transcriptor /ruta/carpeta        -> convierte y transcribe los audio/video
  *   ./transcriptor a.mp4 b.mkv          -> idem con archivos sueltos
  *
  * Opciones (variables de entorno):
- *   WHISPER_MODEL       -> ruta al modelo .bin de whisper (obligatorio)
+ *   WHISPER_MODEL       -> ruta al modelo .bin de whisper (modo personalizado)
  *   OUTPUT_DIR          -> carpeta de salida
  *   TRANSCRIPT_LANG     -> "auto", "es", "en", ... (por defecto "auto")
- *   TRANSCRIPT_FORMAT   -> "txt", "srt", "vtt" (por defecto "txt")
+ *   TRANSCRIPT_FORMAT   -> "txt", "markdown", "latex", "docx", "pdf"
+ *                          (por defecto "docx")
+ *
+ * [PROYECTO]    arranque y despacho CLI/GUI.
+ * [DEPENDENCIA] GTK 4 (g_application_run), GLib.
  */
 
 static void

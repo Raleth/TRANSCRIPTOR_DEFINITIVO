@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* dependencias (GLib) */
 #include <glib.h>
 
 G_BEGIN_DECLS

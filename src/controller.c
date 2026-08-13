@@ -1,9 +1,19 @@
+/* ============================================================================
+ * controller.c — motor asíncrono del lote de transcripción y de descargas.
+ *
+ * [PROYECTO]    Ana-Trans: orquesta process.c en un GThread y devuelve
+ *               eventos a la GUI por g_idle_add (no depende de GTK).
+ * [DEPENDENCIA] GLib (GThread, g_idle_add, GError).
+ * ========================================================================== */
+
 #include "controller.h"
 
+/* módulos del proyecto */
 #include "formats.h"
 #include "models.h"
 #include "process.h"
 
+/* dependencias (GLib) */
 #include <string.h>
 
 /* Un único lote activo. */

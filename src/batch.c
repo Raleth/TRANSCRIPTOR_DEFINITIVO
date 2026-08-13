@@ -1,5 +1,13 @@
+/* ============================================================================
+ * batch.c — enumeración y filtrado de archivos de audio/video.
+ *
+ * [PROYECTO]    Ana-Trans: lista de extensiones, escaneo, orden y dedup.
+ * [DEPENDENCIA] GLib (GDir, GPtrArray, rutas).
+ * ========================================================================== */
+
 #include "batch.h"
 
+/* dependencias (GLib) */
 #include <glib/gstdio.h>
 #include <string.h>
 

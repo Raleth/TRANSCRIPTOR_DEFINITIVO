@@ -1,7 +1,16 @@
+/* ============================================================================
+ * audio.c — conversión de audio/video a WAV PCM16 mono 16 kHz.
+ *
+ * [PROYECTO]    Ana-Trans: lanza ffmpeg y valida el WAV generado.
+ * [DEPENDENCIA] ffmpeg (binario externo), GLib (g_spawn, rutas, GError).
+ * ========================================================================== */
+
 #include "audio.h"
 
+/* módulos del proyecto */
 #include "config.h"
 
+/* dependencias (GLib) */
 #include <glib/gstdio.h>
 #include <string.h>
 

@@ -1,6 +1,7 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
+/* dependencias (GLib) */
 #include <glib.h>
 
 G_BEGIN_DECLS

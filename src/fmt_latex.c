@@ -1,6 +1,11 @@
-#include "formats.h"
+/* ============================================================================
+ * fmt_latex.c — escritor de formato LaTeX.
+ *
+ * [PROYECTO]    Ana-Trans: documento article con un párrafo por segmento.
+ * [DEPENDENCIA] GLib (funciones de cadena; formats.h trae glib.h).
+ * ========================================================================== */
 
-/* Escritor LaTeX: documento article con un párrafo por segmento. */
+#include "formats.h"
 
 static gchar *
 latex_escape (const char *text)

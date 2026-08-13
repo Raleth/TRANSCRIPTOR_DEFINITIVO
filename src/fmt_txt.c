@@ -1,6 +1,11 @@
-#include "formats.h"
+/* ============================================================================
+ * fmt_txt.c — escritor de texto plano.
+ *
+ * [PROYECTO]    Ana-Trans: un párrafo por segmento.
+ * [DEPENDENCIA] GLib (funciones de cadena; formats.h trae glib.h).
+ * ========================================================================== */
 
-/* Escritor de texto plano: un párrafo por segmento. */
+#include "formats.h"
 
 static gboolean
 txt_write (const TranscriptDocument *doc, const char *out_path, GError **error)

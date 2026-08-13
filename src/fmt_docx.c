@@ -1,5 +1,13 @@
+/* ============================================================================
+ * fmt_docx.c — escritor de formato DOCX (Office Open XML).
+ *
+ * [PROYECTO]    Ana-Trans: XML del documento y empaquetado.
+ * [DEPENDENCIA] libzip (zip.h, port vcpkg "libzip"), GLib.
+ * ========================================================================== */
+
 #include "formats.h"
 
+/* dependencias (libzip vía vcpkg, GLib) */
 #include <zip.h>
 
 #include <glib/gstdio.h>

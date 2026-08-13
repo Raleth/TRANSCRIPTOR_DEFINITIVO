@@ -1,5 +1,14 @@
+/* ============================================================================
+ * gui.c — interfaz GTK 4 de Ana-Trans (ventana, pestañas, eventos del motor).
+ *
+ * [PROYECTO]    Ana-Trans: widgets, callbacks, guardado de preferencias y
+ *               presentación de los eventos de controller.c.
+ * [DEPENDENCIA] GTK 4 (widgets), GLib; el trabajo pesado lo hace el motor.
+ * ========================================================================== */
+
 #include "gui.h"
 
+/* módulos del proyecto */
 #include "batch.h"
 #include "config.h"
 #include "controller.h"
@@ -7,6 +16,7 @@
 #include "models.h"
 #include "transcribe.h"
 
+/* dependencias (GLib / libc) */
 #include <stdarg.h>
 #include <string.h>
 

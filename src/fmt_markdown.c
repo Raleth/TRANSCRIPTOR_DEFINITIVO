@@ -1,6 +1,11 @@
-#include "formats.h"
+/* ============================================================================
+ * fmt_markdown.c — escritor de formato Markdown.
+ *
+ * [PROYECTO]    Ana-Trans: título + un párrafo por segmento.
+ * [DEPENDENCIA] GLib (funciones de cadena; formats.h trae glib.h).
+ * ========================================================================== */
 
-/* Escritor Markdown: título + un párrafo por segmento. */
+#include "formats.h"
 
 static gboolean
 md_write (const TranscriptDocument *doc, const char *out_path, GError **error)

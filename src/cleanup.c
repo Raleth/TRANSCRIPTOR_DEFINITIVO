@@ -1,5 +1,13 @@
+/* ============================================================================
+ * cleanup.c — carpeta temporal para WAV intermedios y limpieza ante señales.
+ *
+ * [PROYECTO]    Ana-Trans: gestión del dir temporal y barrido de huérfanos.
+ * [DEPENDENCIA] GLib (rutas, g_dir_make_tmp); señales POSIX / libc.
+ * ========================================================================== */
+
 #include "cleanup.h"
 
+/* dependencias (GLib y libc del sistema) */
 #include <glib/gstdio.h>
 #include <signal.h>
 #include <stdlib.h>

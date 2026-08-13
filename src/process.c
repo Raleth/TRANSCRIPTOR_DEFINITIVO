@@ -1,9 +1,18 @@
+/* ============================================================================
+ * process.c — procesamiento por lote: ffmpeg + whisper + escritura del formato.
+ *
+ * [PROYECTO]    Ana-Trans: orden de pasos por archivo, reportes y progreso.
+ * [DEPENDENCIA] GLib (rutas, GError); usa audio.c, transcribe.c, cleanup.c.
+ * ========================================================================== */
+
 #include "process.h"
 
+/* módulos del proyecto */
 #include "audio.h"
 #include "cleanup.h"
 #include "transcribe.h"
 
+/* dependencias (GLib) */
 #include <glib/gstdio.h>
 #include <string.h>
 

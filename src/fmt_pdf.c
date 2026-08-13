@@ -1,5 +1,13 @@
+/* ============================================================================
+ * fmt_pdf.c — escritor de formato PDF (cairo + Pango).
+ *
+ * [PROYECTO]    Ana-Trans: maquetación A4, título y párrafos.
+ * [DEPENDENCIA] cairo (cairo-pdf.h) y Pango (pangocairo), vía GTK; GLib.
+ * ========================================================================== */
+
 #include "formats.h"
 
+/* dependencias (cairo/Pango llegan con GTK) */
 #include <cairo.h>
 #include <cairo-pdf.h>
 #include <pango/pangocairo.h>
