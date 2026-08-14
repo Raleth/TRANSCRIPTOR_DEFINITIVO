@@ -68,6 +68,10 @@ void config_set_output_dir         (const char *value);
 void config_set_transcript_lang    (const char *value);
 void config_set_transcript_format  (const char *value);
 
+/* Idioma de la interfaz: "sistema" o código ISO 639 (config > "sistema"). */
+const char *config_get_ui_language (void);
+void config_set_ui_language (const char *value);
+
 /* Escribe el archivo de configuración. Devuelve TRUE en éxito. */
 gboolean config_save (void);
 

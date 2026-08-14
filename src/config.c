@@ -23,6 +23,7 @@ static gchar *cfg_transcript_lang = NULL;
 static gchar *cfg_transcript_format = NULL;
 static gchar *cfg_model_mode = NULL;
 static gchar *cfg_easy_model = NULL;
+static gchar *cfg_ui_language = NULL;
 
 static GKeyFile *keyfile = NULL;
 static gchar *config_file = NULL;
@@ -56,6 +57,7 @@ config_ensure (void)
     cfg_transcript_format = g_key_file_get_string (keyfile, CONFIG_GROUP, "transcript-format", NULL);
     cfg_model_mode  = g_key_file_get_string (keyfile, CONFIG_GROUP, "model-mode", NULL);
     cfg_easy_model  = g_key_file_get_string (keyfile, CONFIG_GROUP, "easy-model", NULL);
+    cfg_ui_language = g_key_file_get_string (keyfile, CONFIG_GROUP, "ui-language", NULL);
 }
 
 void
@@ -231,6 +233,23 @@ config_set_easy_model (const char *value)
 }
 
 /* --- guardado --- */
+
+const char *
+config_get_ui_language (void)
+{
+    config_ensure ();
+    return (cfg_ui_language != NULL && *cfg_ui_language != '\0')
+               ? cfg_ui_language : "sistema";
+}
+
+void
+config_set_ui_language (const char *value)
+{
+    config_ensure ();
+    g_free (cfg_ui_language);
+    cfg_ui_language = g_strdup ((value != NULL && *value != '\0') ? value : "sistema");
+    g_key_file_set_string (keyfile, CONFIG_GROUP, "ui-language", cfg_ui_language);
+}
 
 gboolean
 config_save (void)

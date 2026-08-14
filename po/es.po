@@ -1,0 +1,327 @@
+# Spanish translations for Ana-Trans.
+# Copyright (C) 2026 Ana-Trans
+# This file is distributed under the same license as the Ana-Trans package.
+msgid ""
+msgstr ""
+"Project-Id-Version: transcriptor 0.1.0\n"
+"POT-Creation-Date: 2026-08-13\n"
+"PO-Revision-Date: 2026-08-13\n"
+"Last-Translator: \n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/gui.c src/models.c
+msgid "Cargando modelo"
+msgstr "Cargando modelo"
+
+#: src/gui.c src/models.c
+msgid "Convirtiendo"
+msgstr "Convirtiendo"
+
+#: src/gui.c src/models.c
+msgid "Transcribiendo"
+msgstr "Transcribiendo"
+
+#: src/gui.c src/models.c
+msgid "Listo"
+msgstr "Listo"
+
+#: src/gui.c src/models.c
+msgid "Sistema (idioma del sistema)"
+msgstr "Sistema (idioma del sistema)"
+
+#: src/gui.c src/models.c
+msgid "Español"
+msgstr "Español"
+
+#: src/gui.c src/models.c
+msgid "English"
+msgstr "English"
+
+#: src/gui.c src/models.c
+msgid "Modelo personalizado"
+msgstr "Modelo personalizado"
+
+#: src/gui.c src/models.c
+msgid "Modo sencillo"
+msgstr "Modo sencillo"
+
+#: src/gui.c src/models.c
+msgid "Los cambios se guardan automáticamente en:"
+msgstr "Los cambios se guardan automáticamente en:"
+
+#: src/gui.c src/models.c
+msgid "Listo."
+msgstr "Listo."
+
+#: src/gui.c src/models.c
+msgid "%u archivo(s) en cola."
+msgstr "%u archivo(s) en cola."
+
+#: src/gui.c src/models.c
+msgid "Seleccionar carpeta de entrada"
+msgstr "Seleccionar carpeta de entrada"
+
+#: src/gui.c src/models.c
+msgid "Agregar archivos de audio/video"
+msgstr "Agregar archivos de audio/video"
+
+#: src/gui.c src/models.c
+msgid "Seleccionar carpeta de salida"
+msgstr "Seleccionar carpeta de salida"
+
+#: src/gui.c src/models.c
+msgid "Seleccionar modelo de whisper (.bin)"
+msgstr "Seleccionar modelo de whisper (.bin)"
+
+#: src/gui.c src/models.c
+msgid "Descargando modelo %s (%d/%d)…"
+msgstr "Descargando modelo %s (%d/%d)…"
+
+#: src/gui.c src/models.c
+msgid "Modelo %s listo (%d/%d)."
+msgstr "Modelo %s listo (%d/%d)."
+
+#: src/gui.c src/models.c
+msgid "Cargando modelo…"
+msgstr "Cargando modelo…"
+
+#: src/gui.c src/models.c
+msgid "%d/%d · %d%% — %s (%s)"
+msgstr "%d/%d · %d%% — %s (%s)"
+
+#: src/gui.c src/models.c
+msgid "Proceso terminado: %d de %d archivo(s) convertidos."
+msgstr "Proceso terminado: %d de %d archivo(s) convertidos."
+
+#: src/gui.c src/models.c
+msgid "Completado"
+msgstr "Completado"
+
+#: src/gui.c src/models.c
+msgid "Modelo descargado."
+msgstr "Modelo descargado."
+
+#: src/gui.c src/models.c
+msgid "Descarga de modelos terminada: %d de %d correctos."
+msgstr "Descarga de modelos terminada: %d de %d correctos."
+
+#: src/gui.c src/models.c
+msgid "Modelo descargado"
+msgstr "Modelo descargado"
+
+#: src/gui.c src/models.c
+msgid "Error al descargar el modelo."
+msgstr "Error al descargar el modelo."
+
+#: src/gui.c src/models.c
+msgid "Descarga fallida"
+msgstr "Descarga fallida"
+
+#: src/gui.c src/models.c
+msgid "Modelos del modo sencillo listos."
+msgstr "Modelos del modo sencillo listos."
+
+#: src/gui.c src/models.c
+msgid "Modelos listos"
+msgstr "Modelos listos"
+
+#: src/gui.c src/models.c
+msgid "La descarga terminó con errores (%d de %d modelos)."
+msgstr "La descarga terminó con errores (%d de %d modelos)."
+
+#: src/gui.c src/models.c
+msgid "Descarga con errores"
+msgstr "Descarga con errores"
+
+#: src/gui.c src/models.c
+msgid "Procesamiento en curso; espera a que termine."
+msgstr "Procesamiento en curso; espera a que termine."
+
+#: src/gui.c src/models.c
+msgid "Ya hay un procesamiento en curso."
+msgstr "Ya hay un procesamiento en curso."
+
+#: src/gui.c src/models.c
+msgid "No hay archivos en la cola. Selecciona una carpeta o agrega archivos."
+msgstr "No hay archivos en la cola. Selecciona una carpeta o agrega archivos."
+
+#: src/gui.c src/models.c
+msgid "Indica una carpeta de salida primero."
+msgstr "Indica una carpeta de salida primero."
+
+#: src/gui.c src/models.c
+msgid "El modelo '%s' aún no está descargado (modo sencillo)."
+msgstr "El modelo '%s' aún no está descargado (modo sencillo)."
+
+#: src/gui.c src/models.c
+msgid "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL."
+msgstr "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL."
+
+#: src/gui.c src/models.c
+msgid "Procesando…"
+msgstr "Procesando…"
+
+#: src/gui.c src/models.c
+msgid "No se pudo iniciar el procesamiento."
+msgstr "No se pudo iniciar el procesamiento."
+
+#: src/gui.c src/models.c
+msgid "Lista vaciada."
+msgstr "Lista vaciada."
+
+#: src/gui.c src/models.c
+msgid "No se pudo cambiar el idioma (catálogo no encontrado)."
+msgstr "No se pudo cambiar el idioma (catálogo no encontrado)."
+
+#: src/gui.c src/models.c
+msgid "Descargado"
+msgstr "Descargado"
+
+#: src/gui.c src/models.c
+msgid "Pendiente de descarga"
+msgstr "Pendiente de descarga"
+
+#: src/gui.c src/models.c
+msgid "Descargado ✓"
+msgstr "Descargado ✓"
+
+#: src/gui.c src/models.c
+msgid "Ya hay una tarea en curso; espera a que termine."
+msgstr "Ya hay una tarea en curso; espera a que termine."
+
+#: src/gui.c src/models.c
+msgid "Descargando modelos del modo sencillo…"
+msgstr "Descargando modelos del modo sencillo…"
+
+#: src/gui.c src/models.c
+msgid "No se pudo iniciar la descarga."
+msgstr "No se pudo iniciar la descarga."
+
+#: src/gui.c src/models.c
+msgid "Modo de modelo:"
+msgstr "Modo de modelo:"
+
+#: src/gui.c src/models.c
+msgid "Ruta del modelo .bin preferido"
+msgstr "Ruta del modelo .bin preferido"
+
+#: src/gui.c src/models.c
+msgid "Modelo personalizado:"
+msgstr "Modelo personalizado:"
+
+#: src/gui.c src/models.c
+msgid "Modelos del modo sencillo:"
+msgstr "Modelos del modo sencillo:"
+
+#: src/gui.c src/models.c
+msgid "Descargar modelos"
+msgstr "Descargar modelos"
+
+#: src/gui.c src/models.c
+msgid "Carpeta donde guardar las transcripciones"
+msgstr "Carpeta donde guardar las transcripciones"
+
+#: src/gui.c src/models.c
+msgid "Carpeta de salida:"
+msgstr "Carpeta de salida:"
+
+#: src/gui.c src/models.c
+msgid "Idioma por defecto:"
+msgstr "Idioma por defecto:"
+
+#: src/gui.c src/models.c
+msgid "Formato por defecto:"
+msgstr "Formato por defecto:"
+
+#: src/gui.c src/models.c
+msgid "Idioma de la interfaz:"
+msgstr "Idioma de la interfaz:"
+
+#: src/gui.c src/models.c
+msgid "Preferencias"
+msgstr "Preferencias"
+
+#: src/gui.c src/models.c
+msgid "Transcripción"
+msgstr "Transcripción"
+
+#: src/gui.c src/models.c
+msgid "Carpeta o archivos a procesar"
+msgstr "Carpeta o archivos a procesar"
+
+#: src/gui.c src/models.c
+msgid "Carpeta…"
+msgstr "Carpeta…"
+
+#: src/gui.c src/models.c
+msgid "Archivos…"
+msgstr "Archivos…"
+
+#: src/gui.c src/models.c
+msgid "Entrada:"
+msgstr "Entrada:"
+
+#: src/gui.c src/models.c
+msgid "Sin archivos. Selecciona una carpeta o agrega archivos."
+msgstr "Sin archivos. Selecciona una carpeta o agrega archivos."
+
+#: src/gui.c src/models.c
+msgid "Salida:"
+msgstr "Salida:"
+
+#: src/gui.c src/models.c
+msgid "Selecciona el modelo .bin (o define WHISPER_MODEL)"
+msgstr "Selecciona el modelo .bin (o define WHISPER_MODEL)"
+
+#: src/gui.c src/models.c
+msgid "Modelo whisper:"
+msgstr "Modelo whisper:"
+
+#: src/gui.c src/models.c
+msgid "Modelo (modo sencillo):"
+msgstr "Modelo (modo sencillo):"
+
+#: src/gui.c src/models.c
+msgid "Idioma:"
+msgstr "Idioma:"
+
+#: src/gui.c src/models.c
+msgid "Formato:"
+msgstr "Formato:"
+
+#: src/gui.c src/models.c
+msgid "Limpiar lista"
+msgstr "Limpiar lista"
+
+#: src/gui.c src/models.c
+msgid "Procesar"
+msgstr "Procesar"
+
+#: src/gui.c src/models.c
+msgid "Preciso"
+msgstr "Preciso"
+
+#: src/gui.c src/models.c
+msgid "Equilibrado"
+msgstr "Equilibrado"
+
+#: src/gui.c src/models.c
+msgid "Rápido"
+msgstr "Rápido"
+
+#: src/gui.c src/models.c
+msgid "Máxima fidelidad del habla; más lento y ocupa ~1.6 GB."
+msgstr "Máxima fidelidad del habla; más lento y ocupa ~1.6 GB."
+
+#: src/gui.c src/models.c
+msgid "Buen balance entre calidad y velocidad; ~1.5 GB."
+msgstr "Buen balance entre calidad y velocidad; ~1.5 GB."
+
+#: src/gui.c src/models.c
+msgid "El más veloz y ligero; algo menos preciso; ~0.5 GB."
+msgstr "El más veloz y ligero; algo menos preciso; ~0.5 GB."

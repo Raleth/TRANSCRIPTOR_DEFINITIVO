@@ -11,6 +11,7 @@ Transcribe audio y video a texto usando **GTK 4**, **whisper.cpp** y **ffmpeg**.
 - Formatos de salida: `txt`, `markdown`, `latex`, `docx`, `pdf`.
 - **Modo sencillo** (por defecto): 3 modelos de Whisper, descargados automáticamente en el primer uso y reutilizados después.
 - **Modo personalizado**: usa cualquier modelo `.bin` de whisper.cpp.
+- **Interfaz multilingüe** (es/en): cambia el idioma de la interfaz en caliente, sin reiniciar.
 
 ## Requisitos
 

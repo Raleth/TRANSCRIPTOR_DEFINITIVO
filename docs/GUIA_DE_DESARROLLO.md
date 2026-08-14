@@ -71,6 +71,30 @@ expone en el `.h` lo que otros módulos deben usar.
 
 Modelo a imitar: `src/fmt_markdown.c` (el más corto).
 
+## Añadir un idioma a la interfaz
+
+La interfaz se traduce con **gettext** (módulo `src/i18n.c`); el español es el
+idioma base (los `msgid` son las cadenas en español) y el cambio de idioma es
+**en caliente** (sin reiniciar). Para añadir un idioma:
+
+1. Crea `po/<codigo>.po` (copia de `po/en.po` como plantilla) y traduce los
+   `msgstr`. También añade su nombre al `ui_lang_name()` de `gui.c` para que
+   se muestre en su propio idioma en el selector.
+2. Recompila: `cmake --build build/linux` (o `scripts/build-mo.sh`) genera
+   `locale/<codigo>/LC_MESSAGES/transcriptor.mo`.
+3. Verifica: `scripts/check-i18n.sh` (completitud y placeholders) y
+   `ctest --test-dir build/linux` (anchos y cambio en caliente).
+
+Reglas al añadir/mover textos de la GUI:
+
+- Envuélvelos en `t_("...")` para mensajes dinámicos (estado, progreso) o
+  regístralos con `i18n_bind(widget, tipo, "texto base")` para los textos
+  estáticos (títulos, botones, placeholders, pestañas).
+- Los `msgid` no deben variar entre versiones (el catálogo los referencia);
+  cambia el texto en `es.po` y en el código a la vez.
+- Los textos con `%s`/`%d` deben mantener los mismos placeholders en todas
+  las traducciones (lo comprueba `check-i18n.sh`).
+
 ## Añadir un modelo al modo sencillo
 
 1. Añade una entrada a `k_models` en `src/models.c` con `id`, `filename`

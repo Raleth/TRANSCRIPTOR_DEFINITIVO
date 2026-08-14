@@ -71,6 +71,7 @@ add_executable(transcriptor
     src/cleanup.c
     src/controller.c
     src/models.c
+    src/i18n.c
     src/transcribe.c
     src/formats.c
     src/fmt_txt.c
@@ -93,9 +94,42 @@ endif()
 target_compile_definitions(transcriptor PRIVATE
     MODELS_SCRIPT_DIR="${CMAKE_SOURCE_DIR}/scripts")
 
+# Internacionalización: directorio donde viven los catálogos .mo
+# (compilados por scripts/build-mo.sh a partir de po/*.po).
+target_compile_definitions(transcriptor PRIVATE
+    I18N_LOCALEDIR="${CMAKE_SOURCE_DIR}/locale")
+
+# Compila los catálogos de traducción (po/*.po -> locale/<lang>/LC_MESSAGES).
+# No falla si msgfmt no está instalado: se usan los msgid (español).
+add_custom_target(i18n_mo ALL
+    COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/build-mo.sh
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Compilando catálogos de traducción (msgfmt)"
+)
+add_dependencies(transcriptor i18n_mo)
+
 # El estándar queda asociado al target para que compile_commands.json
 # refleje exactamente lo que se compila.
 target_compile_features(transcriptor PRIVATE c_std_17)
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+# i18n_layout: verifica que las traducciones no desborden el layout
+# (mide el ancho de cada texto por idioma con Pango, sin ventana).
+enable_testing()
+add_executable(i18n_layout
+    tests/i18n_layout.c
+    src/i18n.c
+)
+target_include_directories(i18n_layout PRIVATE src)
+target_compile_definitions(i18n_layout PRIVATE
+    I18N_LOCALEDIR="${CMAKE_SOURCE_DIR}/locale"
+    PO_DIR="${CMAKE_SOURCE_DIR}/po")
+target_link_libraries(i18n_layout PRIVATE PkgConfig::GTK4)
+target_compile_features(i18n_layout PRIVATE c_std_17)
+add_dependencies(i18n_layout i18n_mo)
+add_test(NAME i18n_layout COMMAND i18n_layout)
 
 target_link_libraries(transcriptor
     PRIVATE

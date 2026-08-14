@@ -66,6 +66,7 @@ reúne los archivos de entrada y quién muestra el resultado.
 | `fmt_*.c` | Un escritor de formato cada uno | `formats.c` |
 | `models.c` | Catálogo de modelos del modo sencillo + descarga | `gui.c`, `controller.c`, `config.c` |
 | `cleanup.c` | Carpeta temporal de WAV + limpieza ante señales | `process.c` |
+| `i18n.c` | Internacionalización (gettext): idioma activo, cambio en caliente, RTL | `gui.c` |
 
 ## Modos de modelo
 

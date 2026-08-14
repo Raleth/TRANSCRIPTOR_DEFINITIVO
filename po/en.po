@@ -1,0 +1,327 @@
+# English translations for Ana-Trans.
+# Copyright (C) 2026 Ana-Trans
+# This file is distributed under the same license as the Ana-Trans package.
+msgid ""
+msgstr ""
+"Project-Id-Version: transcriptor 0.1.0\n"
+"POT-Creation-Date: 2026-08-13\n"
+"PO-Revision-Date: 2026-08-13\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/gui.c src/models.c
+msgid "Cargando modelo"
+msgstr "Loading model"
+
+#: src/gui.c src/models.c
+msgid "Convirtiendo"
+msgstr "Converting"
+
+#: src/gui.c src/models.c
+msgid "Transcribiendo"
+msgstr "Transcribing"
+
+#: src/gui.c src/models.c
+msgid "Listo"
+msgstr "Done"
+
+#: src/gui.c src/models.c
+msgid "Sistema (idioma del sistema)"
+msgstr "System (system language)"
+
+#: src/gui.c src/models.c
+msgid "Español"
+msgstr "Spanish"
+
+#: src/gui.c src/models.c
+msgid "English"
+msgstr "English"
+
+#: src/gui.c src/models.c
+msgid "Modelo personalizado"
+msgstr "Custom model"
+
+#: src/gui.c src/models.c
+msgid "Modo sencillo"
+msgstr "Easy mode"
+
+#: src/gui.c src/models.c
+msgid "Los cambios se guardan automáticamente en:"
+msgstr "Changes are saved automatically to:"
+
+#: src/gui.c src/models.c
+msgid "Listo."
+msgstr "Ready."
+
+#: src/gui.c src/models.c
+msgid "%u archivo(s) en cola."
+msgstr "%u file(s) queued."
+
+#: src/gui.c src/models.c
+msgid "Seleccionar carpeta de entrada"
+msgstr "Select input folder"
+
+#: src/gui.c src/models.c
+msgid "Agregar archivos de audio/video"
+msgstr "Add audio/video files"
+
+#: src/gui.c src/models.c
+msgid "Seleccionar carpeta de salida"
+msgstr "Select output folder"
+
+#: src/gui.c src/models.c
+msgid "Seleccionar modelo de whisper (.bin)"
+msgstr "Select Whisper model (.bin)"
+
+#: src/gui.c src/models.c
+msgid "Descargando modelo %s (%d/%d)…"
+msgstr "Downloading model %s (%d/%d)…"
+
+#: src/gui.c src/models.c
+msgid "Modelo %s listo (%d/%d)."
+msgstr "Model %s ready (%d/%d)."
+
+#: src/gui.c src/models.c
+msgid "Cargando modelo…"
+msgstr "Loading model…"
+
+#: src/gui.c src/models.c
+msgid "%d/%d · %d%% — %s (%s)"
+msgstr "%d/%d · %d%% — %s (%s)"
+
+#: src/gui.c src/models.c
+msgid "Proceso terminado: %d de %d archivo(s) convertidos."
+msgstr "Finished: %d of %d file(s) converted."
+
+#: src/gui.c src/models.c
+msgid "Completado"
+msgstr "Completed"
+
+#: src/gui.c src/models.c
+msgid "Modelo descargado."
+msgstr "Model downloaded."
+
+#: src/gui.c src/models.c
+msgid "Descarga de modelos terminada: %d de %d correctos."
+msgstr "Model download finished: %d of %d successful."
+
+#: src/gui.c src/models.c
+msgid "Modelo descargado"
+msgstr "Model downloaded"
+
+#: src/gui.c src/models.c
+msgid "Error al descargar el modelo."
+msgstr "Error downloading the model."
+
+#: src/gui.c src/models.c
+msgid "Descarga fallida"
+msgstr "Download failed"
+
+#: src/gui.c src/models.c
+msgid "Modelos del modo sencillo listos."
+msgstr "Easy-mode models are ready."
+
+#: src/gui.c src/models.c
+msgid "Modelos listos"
+msgstr "Models ready"
+
+#: src/gui.c src/models.c
+msgid "La descarga terminó con errores (%d de %d modelos)."
+msgstr "The download finished with errors (%d of %d models)."
+
+#: src/gui.c src/models.c
+msgid "Descarga con errores"
+msgstr "Download with errors"
+
+#: src/gui.c src/models.c
+msgid "Procesamiento en curso; espera a que termine."
+msgstr "Processing in progress; wait for it to finish."
+
+#: src/gui.c src/models.c
+msgid "Ya hay un procesamiento en curso."
+msgstr "A job is already in progress."
+
+#: src/gui.c src/models.c
+msgid "No hay archivos en la cola. Selecciona una carpeta o agrega archivos."
+msgstr "No files queued. Select a folder or add files."
+
+#: src/gui.c src/models.c
+msgid "Indica una carpeta de salida primero."
+msgstr "Set an output folder first."
+
+#: src/gui.c src/models.c
+msgid "El modelo '%s' aún no está descargado (modo sencillo)."
+msgstr "Model '%s' is not downloaded yet (easy mode)."
+
+#: src/gui.c src/models.c
+msgid "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL."
+msgstr "Select the Whisper model (.bin) or set WHISPER_MODEL."
+
+#: src/gui.c src/models.c
+msgid "Procesando…"
+msgstr "Processing…"
+
+#: src/gui.c src/models.c
+msgid "No se pudo iniciar el procesamiento."
+msgstr "Could not start processing."
+
+#: src/gui.c src/models.c
+msgid "Lista vaciada."
+msgstr "Queue cleared."
+
+#: src/gui.c src/models.c
+msgid "No se pudo cambiar el idioma (catálogo no encontrado)."
+msgstr "Could not change the language (catalog not found)."
+
+#: src/gui.c src/models.c
+msgid "Descargado"
+msgstr "Downloaded"
+
+#: src/gui.c src/models.c
+msgid "Pendiente de descarga"
+msgstr "Not downloaded"
+
+#: src/gui.c src/models.c
+msgid "Descargado ✓"
+msgstr "Downloaded ✓"
+
+#: src/gui.c src/models.c
+msgid "Ya hay una tarea en curso; espera a que termine."
+msgstr "A task is already running; wait for it to finish."
+
+#: src/gui.c src/models.c
+msgid "Descargando modelos del modo sencillo…"
+msgstr "Downloading easy-mode models…"
+
+#: src/gui.c src/models.c
+msgid "No se pudo iniciar la descarga."
+msgstr "Could not start the download."
+
+#: src/gui.c src/models.c
+msgid "Modo de modelo:"
+msgstr "Model mode:"
+
+#: src/gui.c src/models.c
+msgid "Ruta del modelo .bin preferido"
+msgstr "Preferred .bin model path"
+
+#: src/gui.c src/models.c
+msgid "Modelo personalizado:"
+msgstr "Custom model:"
+
+#: src/gui.c src/models.c
+msgid "Modelos del modo sencillo:"
+msgstr "Easy-mode models:"
+
+#: src/gui.c src/models.c
+msgid "Descargar modelos"
+msgstr "Download models"
+
+#: src/gui.c src/models.c
+msgid "Carpeta donde guardar las transcripciones"
+msgstr "Folder to save the transcripts"
+
+#: src/gui.c src/models.c
+msgid "Carpeta de salida:"
+msgstr "Output folder:"
+
+#: src/gui.c src/models.c
+msgid "Idioma por defecto:"
+msgstr "Default language:"
+
+#: src/gui.c src/models.c
+msgid "Formato por defecto:"
+msgstr "Default format:"
+
+#: src/gui.c src/models.c
+msgid "Idioma de la interfaz:"
+msgstr "Interface language:"
+
+#: src/gui.c src/models.c
+msgid "Preferencias"
+msgstr "Preferences"
+
+#: src/gui.c src/models.c
+msgid "Transcripción"
+msgstr "Transcription"
+
+#: src/gui.c src/models.c
+msgid "Carpeta o archivos a procesar"
+msgstr "Folder or files to process"
+
+#: src/gui.c src/models.c
+msgid "Carpeta…"
+msgstr "Folder…"
+
+#: src/gui.c src/models.c
+msgid "Archivos…"
+msgstr "Files…"
+
+#: src/gui.c src/models.c
+msgid "Entrada:"
+msgstr "Input:"
+
+#: src/gui.c src/models.c
+msgid "Sin archivos. Selecciona una carpeta o agrega archivos."
+msgstr "No files. Select a folder or add files."
+
+#: src/gui.c src/models.c
+msgid "Salida:"
+msgstr "Output:"
+
+#: src/gui.c src/models.c
+msgid "Selecciona el modelo .bin (o define WHISPER_MODEL)"
+msgstr "Select the .bin model (or set WHISPER_MODEL)"
+
+#: src/gui.c src/models.c
+msgid "Modelo whisper:"
+msgstr "Whisper model:"
+
+#: src/gui.c src/models.c
+msgid "Modelo (modo sencillo):"
+msgstr "Model (easy mode):"
+
+#: src/gui.c src/models.c
+msgid "Idioma:"
+msgstr "Language:"
+
+#: src/gui.c src/models.c
+msgid "Formato:"
+msgstr "Format:"
+
+#: src/gui.c src/models.c
+msgid "Limpiar lista"
+msgstr "Clear queue"
+
+#: src/gui.c src/models.c
+msgid "Procesar"
+msgstr "Process"
+
+#: src/gui.c src/models.c
+msgid "Preciso"
+msgstr "Accurate"
+
+#: src/gui.c src/models.c
+msgid "Equilibrado"
+msgstr "Balanced"
+
+#: src/gui.c src/models.c
+msgid "Rápido"
+msgstr "Fast"
+
+#: src/gui.c src/models.c
+msgid "Máxima fidelidad del habla; más lento y ocupa ~1.6 GB."
+msgstr "Maximum speech fidelity; slower and takes ~1.6 GB."
+
+#: src/gui.c src/models.c
+msgid "Buen balance entre calidad y velocidad; ~1.5 GB."
+msgstr "Good balance between quality and speed; ~1.5 GB."
+
+#: src/gui.c src/models.c
+msgid "El más veloz y ligero; algo menos preciso; ~0.5 GB."
+msgstr "Fastest and lightest; slightly less accurate; ~0.5 GB."

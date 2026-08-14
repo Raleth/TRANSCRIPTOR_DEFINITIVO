@@ -1,0 +1,339 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-14 15:03-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/gui.c:158
+msgid "Cargando modelo"
+msgstr ""
+
+#: src/gui.c:160
+msgid "Convirtiendo"
+msgstr ""
+
+#: src/gui.c:162
+msgid "Transcribiendo"
+msgstr ""
+
+#: src/gui.c:164
+msgid "Listo"
+msgstr ""
+
+#: src/gui.c:173
+msgid "Sistema (idioma del sistema)"
+msgstr ""
+
+#: src/gui.c:175
+msgid "Español"
+msgstr ""
+
+#: src/gui.c:177
+msgid "English"
+msgstr ""
+
+#: src/gui.c:253
+msgid "Modelo personalizado"
+msgstr ""
+
+#: src/gui.c:254
+msgid "Modo sencillo"
+msgstr ""
+
+#: src/gui.c:278
+msgid "Los cambios se guardan automáticamente en:"
+msgstr ""
+
+#: src/gui.c:296 src/gui.c:1485
+msgid "Listo."
+msgstr ""
+
+#: src/gui.c:344
+#, c-format
+msgid "%u archivo(s) en cola."
+msgstr ""
+
+#: src/gui.c:506
+msgid "Seleccionar carpeta de entrada"
+msgstr ""
+
+#: src/gui.c:561
+msgid "Agregar archivos de audio/video"
+msgstr ""
+
+#: src/gui.c:587 src/gui.c:1015
+msgid "Seleccionar carpeta de salida"
+msgstr ""
+
+#: src/gui.c:613 src/gui.c:991
+msgid "Seleccionar modelo de whisper (.bin)"
+msgstr ""
+
+#: src/gui.c:630
+#, c-format
+msgid "Descargando modelo %s (%d/%d)…"
+msgstr ""
+
+#: src/gui.c:643
+#, c-format
+msgid "Modelo %s listo (%d/%d)."
+msgstr ""
+
+#: src/gui.c:663
+msgid "Cargando modelo…"
+msgstr ""
+
+#: src/gui.c:667
+#, c-format
+msgid "%d/%d · %d%% — %s (%s)"
+msgstr ""
+
+#: src/gui.c:691
+#, c-format
+msgid "Proceso terminado: %d de %d archivo(s) convertidos."
+msgstr ""
+
+#: src/gui.c:697
+msgid "Completado"
+msgstr ""
+
+#: src/gui.c:706
+msgid "Modelo descargado."
+msgstr ""
+
+#: src/gui.c:708
+#, c-format
+msgid "Descarga de modelos terminada: %d de %d correctos."
+msgstr ""
+
+#: src/gui.c:714
+msgid "Modelo descargado"
+msgstr ""
+
+#: src/gui.c:722
+msgid "Error al descargar el modelo."
+msgstr ""
+
+#: src/gui.c:723
+msgid "Descarga fallida"
+msgstr ""
+
+#: src/gui.c:734
+msgid "Modelos del modo sencillo listos."
+msgstr ""
+
+#: src/gui.c:735
+msgid "Modelos listos"
+msgstr ""
+
+#: src/gui.c:737
+#, c-format
+msgid "La descarga terminó con errores (%d de %d modelos)."
+msgstr ""
+
+#: src/gui.c:741
+msgid "Descarga con errores"
+msgstr ""
+
+#: src/gui.c:755
+msgid "Procesamiento en curso; espera a que termine."
+msgstr ""
+
+#: src/gui.c:771
+msgid "Ya hay un procesamiento en curso."
+msgstr ""
+
+#: src/gui.c:776
+msgid "No hay archivos en la cola. Selecciona una carpeta o agrega archivos."
+msgstr ""
+
+#: src/gui.c:782
+msgid "Indica una carpeta de salida primero."
+msgstr ""
+
+#: src/gui.c:794
+#, c-format
+msgid "El modelo '%s' aún no está descargado (modo sencillo)."
+msgstr ""
+
+#: src/gui.c:804
+msgid "Selecciona el modelo de whisper (.bin) o define WHISPER_MODEL."
+msgstr ""
+
+#: src/gui.c:837
+msgid "Procesando…"
+msgstr ""
+
+#: src/gui.c:840
+msgid "No se pudo iniciar el procesamiento."
+msgstr ""
+
+#: src/gui.c:857
+msgid "Lista vaciada."
+msgstr ""
+
+#: src/gui.c:968
+msgid "No se pudo cambiar el idioma (catálogo no encontrado)."
+msgstr ""
+
+#: src/gui.c:1039
+msgid "Descargado"
+msgstr ""
+
+#: src/gui.c:1039 src/gui.c:1047
+msgid "Pendiente de descarga"
+msgstr ""
+
+#: src/gui.c:1047
+msgid "Descargado ✓"
+msgstr ""
+
+#: src/gui.c:1123
+msgid "Ya hay una tarea en curso; espera a que termine."
+msgstr ""
+
+#: src/gui.c:1132
+msgid "Descargando modelos del modo sencillo…"
+msgstr ""
+
+#: src/gui.c:1135
+msgid "No se pudo iniciar la descarga."
+msgstr ""
+
+#: src/gui.c:1167
+msgid "Modo de modelo:"
+msgstr ""
+
+#: src/gui.c:1178
+msgid "Ruta del modelo .bin preferido"
+msgstr ""
+
+#: src/gui.c:1186
+msgid "Modelo personalizado:"
+msgstr ""
+
+#: src/gui.c:1197
+msgid "Modelos del modo sencillo:"
+msgstr ""
+
+#: src/gui.c:1200
+msgid "Descargar modelos"
+msgstr ""
+
+#: src/gui.c:1225
+msgid "Carpeta donde guardar las transcripciones"
+msgstr ""
+
+#: src/gui.c:1233
+msgid "Carpeta de salida:"
+msgstr ""
+
+#: src/gui.c:1249
+msgid "Idioma por defecto:"
+msgstr ""
+
+#: src/gui.c:1271
+msgid "Formato por defecto:"
+msgstr ""
+
+#: src/gui.c:1287
+msgid "Idioma de la interfaz:"
+msgstr ""
+
+#: src/gui.c:1300
+msgid "Preferencias"
+msgstr ""
+
+#: src/gui.c:1325
+msgid "Transcripción"
+msgstr ""
+
+#: src/gui.c:1335
+msgid "Carpeta o archivos a procesar"
+msgstr ""
+
+#: src/gui.c:1339
+msgid "Carpeta…"
+msgstr ""
+
+#: src/gui.c:1340
+msgid "Archivos…"
+msgstr ""
+
+#: src/gui.c:1345
+msgid "Entrada:"
+msgstr ""
+
+#: src/gui.c:1359
+msgid "Sin archivos. Selecciona una carpeta o agrega archivos."
+msgstr ""
+
+#: src/gui.c:1383
+msgid "Salida:"
+msgstr ""
+
+#: src/gui.c:1399
+msgid "Selecciona el modelo .bin (o define WHISPER_MODEL)"
+msgstr ""
+
+#: src/gui.c:1405
+msgid "Modelo whisper:"
+msgstr ""
+
+#: src/gui.c:1414
+msgid "Modelo (modo sencillo):"
+msgstr ""
+
+#: src/gui.c:1471
+msgid "Idioma:"
+msgstr ""
+
+#: src/gui.c:1472
+msgid "Formato:"
+msgstr ""
+
+#: src/gui.c:1509
+msgid "Limpiar lista"
+msgstr ""
+
+#: src/gui.c:1510
+msgid "Procesar"
+msgstr ""
+#. dinámicas: labels/subtextos de models.c (msgid usados en runtime)
+#: src/models.c
+msgid "Preciso"
+msgstr ""
+
+#: src/models.c
+msgid "Equilibrado"
+msgstr ""
+
+#: src/models.c
+msgid "Rápido"
+msgstr ""
+
+#: src/models.c
+msgid "Máxima fidelidad del habla; más lento y ocupa ~1.6 GB."
+msgstr ""
+
+#: src/models.c
+msgid "Buen balance entre calidad y velocidad; ~1.5 GB."
+msgstr ""
+
+#: src/models.c
+msgid "El más veloz y ligero; algo menos preciso; ~0.5 GB."
+msgstr ""
+

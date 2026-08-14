@@ -14,3 +14,6 @@ vcpkg_installed/
 
 # Clon de vcpkg (se clona aparte; ver README)
 vcpkg/
+
+# Catálogos de traducción compilados (se regeneran con scripts/build-mo.sh)
+locale/
